@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.jikexueyuan.task.dao.IPoetryDao">
+
+	<select id="getCount" resultType="int" parameterType="map">
+		select count(*)
+		<choose>
+			<when test="type==0"><!-- 0作者，1标题，2名句 -->
+				from poetries inner join poets on poetries.poet_id= poets.id where
+				poets.name like '%${key}%'
+			</when>
+			<when test="type==1">
+				from poetries where title like '%${key}%'
+			</when>
+			<when test="type==2">
+				from poetries where content like '%${key}%'
+			</when>
+		</choose>
+	</select>
+
+	<resultMap id="poetMap" type="Poet">
+		<id property="id" column="pid" />
+		<result property="name" column="name" />
+		<collection property="poetries" javaType="ArrayList"
+			column="poet_id" ofType="com.jikexueyuan.task.entity.Poetry">
+			<result property="id" column="id" />
+			<result property="poet_id" column="poet_id" />
+			<result property="title" column="title" />
+			<result property="content" column="content" />
+		</collection>
+	</resultMap>
+	<select id="searchByCondition" resultMap="poetMap"
+		parameterType="hashmap">
+		select *,poets.id as pid from poetries inner join poets on poetries.poet_id= poets.id
+		<where>
+			<choose>
+				<when test="type==0"><!-- 0作者，1标题，2名句,3，标题以及作者名称 -->
+					poets.name like '%${key}%'
+				</when>
+				<when test="type==1">
+					title like '%${key}%'
+				</when>
+				<when test="type==2">
+					content like '%${key}%'
+				</when>
+				<when test="type==3">
+					title like '%${key1}%' and poets.name like '%${key2}%'
+				</when>
+			</choose>
+			order by poetries.updated_at desc
+			limit ${offset}, ${size}
+		</where>
+	</select>
+
+	<!-- <select id="selectByName" resultType=""></select> -->
+	<!-- <select id="selectByParams" resultType="com.jikexueyuan.demo.entity.TableIp" 
+		parameterType="map"> select * from table_ip order by findTime desc limit 
+		${offset}, ${size} </select> <select id="fetchByParams" resultType="com.jikexueyuan.demo.entity.TableIp" 
+		parameterType="map"> select * from table_ip where 1=1 <if test="country != 
+		null and country != ''"> and country = '${country}' </if> <if test="isp != 
+		null and isp != ''"> and isp = '${isp}' </if> limit ${size} </select> -->
+
+</mapper> 

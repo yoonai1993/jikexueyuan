@@ -1,0 +1,109 @@
+
+DROP TABLE IF EXISTS `tb_course`;
+CREATE TABLE `tb_course` (
+  `Cno` varchar(20) NOT NULL,
+  `Cname` varchar(50) DEFAULT NULL,
+  `Tno` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`Cno`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+LOCK TABLES `tb_course` WRITE;
+INSERT INTO `tb_course` VALUES ('001','语文','001'),('002','数学','002'),('003','英语','001'),('004','物理','003'),('005','政治','001');
+UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `tb_sc`;
+CREATE TABLE `tb_sc` (
+  `Sno` varchar(20) NOT NULL,
+  `Cno` varchar(20) NOT NULL,
+  `score` int(11) DEFAULT NULL,
+  PRIMARY KEY (`Sno`,`Cno`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `tb_sc` WRITE;
+INSERT INTO `tb_sc` VALUES ('001','001',50),('001','002',60),('001','003',70),('001','004',80),('001','005',90),('002','001',90),('002','002',80),('002','003',70),('002','004',60),('002','005',50),('003','001',81),('003','002',82),('003','003',83),('003','004',84),('003','005',85);
+UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `tb_student`;
+CREATE TABLE `tb_student` (
+  `Sno` varchar(20) NOT NULL,
+  `Sname` varchar(50) DEFAULT NULL,
+  `Ssex` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`Sno`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `tb_student` WRITE;
+INSERT INTO `tb_student` VALUES ('001','陈一','男'),('002','郭二','男'),('003','张三','女'),('004','李四','男'),('005','王五','女');
+UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `tb_teacher`;
+CREATE TABLE `tb_teacher` (
+  `Tno` varchar(20) NOT NULL,
+  `Tname` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`Tno`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `tb_teacher` WRITE;
+INSERT INTO `tb_teacher` VALUES ('001','张三'),('002','王老师'),('003','钱老师'),('004','刘老师'),('005','胡老师');
+UNLOCK TABLES;
+
+-- 1.给出所有选修数学的女生
+SELECT 
+    tc.Cname AS 课程名,
+    student.Sno AS 学生编号,
+    student.Sname AS 姓名,
+    student.Ssex AS 性别
+FROM
+    tb_course tc
+        INNER JOIN
+    tb_sc sc ON tc.Cno = sc.Cno
+        INNER JOIN
+    tb_student student ON sc.Sno = student.Sno
+WHERE
+    tc.Cname = '数学'
+        AND student.Ssex = '女';
+
+-- 2.按照课程，给出每一门课程的平均成绩
+SELECT 
+    course.Cname AS 课程名, AVG(sc.score) AS 平均分
+FROM
+    tb_sc sc
+        INNER JOIN
+    tb_course course ON sc.Cno = course.Cno
+GROUP BY sc.Cno
+
+-- 3.按照课程，给出每门课程成绩最高的学生姓名
+SELECT 
+    course.Cname AS 课程名,
+    MAX(sc.score) AS 最高分,
+    student.Sno AS 学生编号,
+    student.Sno AS 姓名
+FROM
+    tb_student student
+        INNER JOIN
+    tb_sc sc ON student.Sno = sc.Sno
+        INNER JOIN
+    tb_course course ON sc.Cno = course.Cno
+GROUP BY sc.Cno
+
+-- 4.给出张三教师所教学生的课程成绩表
+SELECT 
+    course.Cname AS 课程名,
+    student.Sno AS 学生编号,
+    student.Sno AS 姓名,
+    sc.score AS 成绩
+FROM
+    tb_sc sc
+        INNER JOIN
+    tb_student student ON student.Sno = sc.Sno
+        INNER JOIN
+    tb_course course ON course.Cno = sc.Cno
+        INNER JOIN
+    tb_teacher tc ON course.Tno = tc.Tno
+WHERE
+    tc.Tname = '张三'
+ORDER BY course.Cname
+
+  
+  
+  
