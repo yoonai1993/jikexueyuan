@@ -39,7 +39,7 @@
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-		<!-- JSON end -->
+		<!-- JSON end end-->
 
 		<dependency>
 			<groupId>org.springframework</groupId>
