@@ -17,7 +17,7 @@
 		<tomcat-jdbc.version>7.0.52</tomcat-jdbc.version>
 		<jackson.version>2.3.1</jackson.version>
 
-		<!-- Plugin的属性定义 -->
+		<!-- Plugin的属性定义注释 -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.7</java.version>
 
